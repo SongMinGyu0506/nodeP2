@@ -23,7 +23,6 @@ module.exports = class User extends Sequelize.Model {
         });
     }
     static associate(db) {
-        db.User.belongsTo(db.User, {foreignKey:'user_id',targetKey:'id'});
-        db.Comment.belongsTo(db.Comment, {foreignKey:'comment_id',targetKey:'id'});
+        db.Board.belongsToMany(db.User,{through: 'UserBoard'});
     }
 }

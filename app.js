@@ -11,6 +11,9 @@ const bodyParser = require('body-parser');
 
 /* router import */
 const userRouter = require('./router/userRouter');
+const memoRouter = require('./router/memoRouter');
+
+
 const morgan = require('morgan');
 
 
@@ -48,6 +51,8 @@ app.use(passport.session());
 
 
 app.use('/user',userRouter);
+app.use('/memo',memoRouter);
+
 
 //Sequelize DB
 sequelize.sync({force:false}).then(()=>{

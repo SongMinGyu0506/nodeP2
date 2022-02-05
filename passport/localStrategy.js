@@ -17,6 +17,7 @@ module.exports = async () => {
                 if (result) {
                     done(null,exUser);
                 } else {
+                    console.log('not matched password');
                     done(null, false, {message:'not match password'});
                 }
             } else {

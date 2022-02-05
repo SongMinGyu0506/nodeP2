@@ -36,6 +36,6 @@ module.exports = class User extends Sequelize.Model {
         });
     }
     static associate(db) {
-        db.User.hasOne(db.Board,{foreignKey: 'user_id', sourceKey:'id'});
+        db.User.belongsToMany(db.Board,{through:'UserBoard'});
     }
 }
