@@ -1,5 +1,6 @@
 const Board = require('../models/board');
 const User = require('../models/user');
+const Relation = require('../models');
 
 exports.MemoRead = async (req,res,next) => {
     const user = await User.findOne({where:{user_id:req.user.user_id},include:[{model:Board}]});
@@ -15,11 +16,38 @@ exports.MemoWrite = async (req,res,next) => {
             message:req.body.message
         });
         user.addBoard(board);
-        res.send('success');
+        res.json({"status":"Completed"});
     } catch (err) {
         console.log(err);
+        next(err);
     }
 };
+exports.CheckUser = async (req,res,next) => {
+    const UserData = await Relation.sequelize.models.UserBoard.findOne({
+        attributes: ['UserId'],
+        where:{BoardId:req.params.id}
+    });
+    const user = await User.findOne({
+        where:{id:UserData.UserId}
+    });
+    if (user.user_id === req.user.user_id) {
+        next();
+    } else {
+        res.status(403).json({"status":"inaccessible account"});
+    }
+};
+
+exports.IsMemo = async (req,res,next) => {
+    const board = await Board.findOne({
+        where:{id:req.params.id}
+    });
+    if (board === null) {
+        res.status(403).json({'status':"post doesn't exist"});
+    } else {
+        next();
+    }
+
+}
 
 exports.MemoModify = async (req,res,next) => {
     const updateData = await Board.update({
@@ -28,9 +56,10 @@ exports.MemoModify = async (req,res,next) => {
     },{
         where:{id:req.params.id},
     }).then(()=>{
-        res.send('success modify');
+        res.json({"status":"Modifications completed"});
     }).catch((err)=>{
         console.log(err);
+        next(err);
     });
 };
 
@@ -39,8 +68,9 @@ exports.MemoDelete = async (req,res,next) => {
         const deleteData = await Board.destroy({
             where:{id:req.params.id}
         });
-        res.send('Success Delete');
+        res.json({"status":"Delete completed"});
     } catch (err) {
         console.log(err);
+        next(err);
     }
 }
